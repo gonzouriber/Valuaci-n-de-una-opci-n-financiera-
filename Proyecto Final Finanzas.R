@@ -60,3 +60,22 @@ d2 <- d1 - sigma * sqrt(T)
 C_justo <- S0 * pnorm(d1) - K * exp(-r * T) * pnorm(d2)
 
 print(paste("El valor justo de la opción de compra es:", round(C_justo, 2)))
+
+# Función para calcular el precio de la opción de compra con simulación de Monte Carlo
+calcular_precio_call <- function(n_sim) {
+  resultados <- replicate(n_sim, simular_precios())
+  payoff <- pmax(resultados[n_steps, ] - K, 0)
+  C_estimado <- exp(-r * T) * mean(payoff)
+  return(C_estimado)
+}
+
+# Calcular el precio de la opción de compra para diferentes números de trayectorias
+n_trayectorias <- c(1000, 10000, 100000, 1000000)
+precios_call <- sapply(n_trayectorias, calcular_precio_call)
+
+# Crear una tabla con los resultados
+tabla_precios_call <- data.frame("Número de trayectorias" = n_trayectorias,
+                                 "Precio estimado del Call" = precios_call)
+print(tabla_precios_call)
+
+
